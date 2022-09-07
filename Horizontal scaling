@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-servers
+  namespace: test-ns
+  labels:
+    app: web-servers
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-servers
+  template:
+    metadata:
+      labels:
+        app: web-servers
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: 100m
+          requests:
+            cpu: 50
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: web-servers
+  name: web-servers
+  namespace: test-ns
+spec:
+  ports:
+  - name: web-servers-port
+    port: 80
+  selector:
+    app: web-servers
+  sessionAffinity: None
+  type: NodePort
+
+
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+ name: web-servers
+ namespace: test-ns
+spec:
+ scaleTargetRef:
+   apiVersion: apps/v1
+   kind: Deployment
+   name: web-servers
+ minReplicas: 1
+ maxReplicas: 10
+ targetCPUUtilizationPercentage: 50

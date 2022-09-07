@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-busybox-pod
+  namespace: test-ns
+spec:
+  containers:
+  - name: jupiter
+    image: nginx
+    env:
+    - name: container1
+      value: "planet"
+    ports:
+    - containerPort: 80
+  - name: europa
+    image: busybox
+    env:
+    - name: container2
+      value: "moon"
+    ports:
+    - containerPort: 8080
